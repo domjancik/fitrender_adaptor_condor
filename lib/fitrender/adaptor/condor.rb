@@ -78,6 +78,29 @@ module Fitrender
         return nodes[0]
       end
 
+      # Parse the job id from a submission
+      def parse_job_id(result)
+        match = /cluster ([0-9]+)/.match result
+        raise Fitrender::SubmissionFailedError unless match
+        match[1]
+      end
+
+      def submit(scene)
+        renderer = detect_renderer(scene)
+        subs = renderer.generate_submissions(scene)
+
+        job_ids = []
+
+        # A list of sub files paths is expected
+        subs.each do |submission|
+          sub_result = `condor_submit #{submission}`
+          raise Fitrender::SubmissionFailedError unless sub_result.to_i == 0
+          job_ids << parse_job_id(sub_result.to_s)
+        end
+
+        job_ids
+      end
+
       def job_status
         available!
 
