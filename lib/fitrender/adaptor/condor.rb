@@ -8,6 +8,8 @@ module Fitrender
   module Adaptor
     # Interact with HTCondor using shell commands
     class CondorShellAdaptor < Fitrender::Adaptor::BaseAdaptor
+      include Fitrender::ConfigurableWithFile
+
       NODE_ACTIVITY_IDLE = 'Idle'
       NODE_ACTIVITY_BUSY = 'Busy'
 
@@ -22,6 +24,9 @@ module Fitrender
 
       def initialize
         super
+
+        option_add 'requirements', '', 'The Requirements expression for submitted jobs, see http://bit.ly/condor_classads for more info'
+        option_add 'rank', '', 'The rank expression for submitted jobs, see http://bit.ly/condor_classads for more info'
 
         add_renderer(Fitrender::Adaptor::Renderer.new \
           'Blender', 'blend', Fitrender::Adaptor::Generators::CondorBlenderGenerator.new
