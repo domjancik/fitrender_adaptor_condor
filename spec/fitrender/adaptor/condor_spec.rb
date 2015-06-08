@@ -38,7 +38,7 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
 
     before :context do
       scene = Fitrender::Adaptor::Scene.new
-      scene.renderer = 'Blender'
+      scene.renderer_id = 'Blender'
       scene.filename = "#{File.dirname(File.absolute_path(__FILE__))}/test_scene.blend"
 
       puts SEPARATOR

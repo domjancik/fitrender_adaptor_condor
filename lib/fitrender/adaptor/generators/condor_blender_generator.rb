@@ -2,7 +2,9 @@ module Fitrender
   module Adaptor
     module Generators
       class CondorBlenderGenerator < Fitrender::Adaptor::Generator
-        def generate(scene, settings = {})
+        include Fitrender::ConfigurationConcerns::Framable
+
+        def generate(scene)
           blender_script_path = "#{File.dirname(__FILE__)}/scripts/blender.sh"
           submit_file_contents = "# Unix submit description file
 # sleep.sub -- simple sleep job
