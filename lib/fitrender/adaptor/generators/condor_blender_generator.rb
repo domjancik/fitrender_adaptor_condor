@@ -4,6 +4,12 @@ module Fitrender
       class CondorBlenderGenerator < Fitrender::Adaptor::Generator
         include Fitrender::ConfigurationConcerns::Framable
 
+        def initialize
+          super
+
+          option_add 'scenes', '', 'The scenes to render, separate by commas, leave blank to use the active scene'
+        end
+
         def generate(scene)
           blender_script_path = "#{File.dirname(__FILE__)}/scripts/blender.sh"
           submit_file_contents = "# Unix submit description file
