@@ -36,28 +36,33 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
   context 'scene submission' do
     MAX_WAIT = 20
 
+    def spec_dir
+      File.dirname(File.absolute_path(__FILE__))
+    end
+
     before :context do
-      scene = Fitrender::Adaptor::Scene.new
-      scene.renderer_id = 'Blender'
-      scene.filename = "#{File.dirname(File.absolute_path(__FILE__))}/test_scene.blend"
+      scene = Fitrender::Adaptor::Scene.new(
+          renderer_id: 'Blender',
+          path: "#{spec_dir}/test_scene.blend"
+      )
 
       puts SEPARATOR
       puts 'Submitting scene'
       puts SEPARATOR
 
-      @job_ids = @adaptor.submit(scene)
+      @jobs = @adaptor.submit(scene)
 
       puts 'Resulted in following jobs:'
-      @job_ids.each do |job_id|
-        puts job_id
+      @jobs.each do |job|
+        puts job
       end
 
       puts SEPARATOR
     end
 
     it 'has valid job ids' do
-      @job_ids.each do |job_id|
-        expect(job_id).to match(/^[0-9]+$/)
+      @jobs.each do |job|
+        expect(job[:id]).to match(/^[0-9]+$/)
       end
     end
 
@@ -67,8 +72,8 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
           Fitrender::Adaptor::States::JOB_STATE_RUNNING
       ]
 
-      @job_ids.each do |job_id|
-        job_state = @adaptor.job_state(job_id)
+      @jobs.each do |job|
+        job_state = @adaptor.job_state(job[:id])
         expect(queue_states).to include(job_state)
       end
     end
@@ -80,8 +85,8 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
       while waiting_for < MAX_WAIT
         sleep 2
         waiting_for += 2
-        all_completed = @job_ids.all? do |job_id|
-          @adaptor.job_state(job_id).eql? Fitrender::Adaptor::States::JOB_STATE_COMPLETED
+        all_completed = @jobs.all? do |job|
+          @adaptor.job_state(job[:id]).eql? Fitrender::Adaptor::States::JOB_STATE_COMPLETED
         end
         if all_completed
           puts "Completed in ~#{waiting_for} seconds"
@@ -92,7 +97,16 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
       expect(all_completed).to eq(true)
     end
 
-    # TODO Scene solving
+    it 'renders correctly' do
+      # One job is expected (1 simple frame)
+      result_path = @jobs[0][:path]
+      # Compare the finished render with a reference image, requires ImageMagick
+      puts 'Comparing images with'
+      cmp_command = "compare -metric mae \"#{spec_dir}/test_result.png\" \"#{result_path}\" /tmp/diff.png"
+      puts cmp_command
+      cmp_result = `#{cmp_command}`
+      expect(cmp_result.to_i).to eq(0)
+    end
   end
 
   it 'implements all methods' do

@@ -128,20 +128,21 @@ module Fitrender
       end
 
       def submit(scene)
-        renderer = detect_renderer(scene)
-        subs = renderer.generate_submissions(scene)
-        subs = subs.is_a?(Array) ? subs : [ subs ]
+        subs = generate_submissions(scene)
 
-        job_ids = []
+        jobs = []
 
         # A list of sub files paths is expected
         subs.each do |submission|
-          sub_result = `condor_submit #{submission}`
+          sub_result = `condor_submit #{submission[:sub_file]}`
           raise Fitrender::SubmissionFailedError unless sub_result.to_i == 0
-          job_ids << parse_job_id(sub_result.to_s)
+          jobs << {
+              id: parse_job_id(sub_result.to_s),
+              path: submission[:render_path]
+          }
         end
 
-        job_ids
+        jobs
       end
 
       # @param [String] status_xml The XML output of either the queue or history command
