@@ -62,7 +62,7 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
 
     it 'has valid job ids' do
       @jobs.each do |job|
-        expect(job[:id]).to match(/^[0-9]+$/)
+        expect(job.id).to match(/^[0-9]+$/)
       end
     end
 
@@ -73,7 +73,7 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
       ]
 
       @jobs.each do |job|
-        job_state = @adaptor.job_state(job[:id])
+        job_state = @adaptor.job_state(job.id)
         expect(queue_states).to include(job_state)
       end
     end
@@ -86,7 +86,7 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
         sleep 2
         waiting_for += 2
         all_completed = @jobs.all? do |job|
-          @adaptor.job_state(job[:id]).eql? Fitrender::Adaptor::States::JOB_STATE_COMPLETED
+          @adaptor.job_state(job.id).eql? Fitrender::Adaptor::States::JOB_STATE_COMPLETED
         end
         if all_completed
           puts "Completed in ~#{waiting_for} seconds"
@@ -99,7 +99,7 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
 
     it 'renders correctly' do
       # One job is expected (1 simple frame)
-      result_path = @jobs[0][:path]
+      result_path = @jobs[0].path
       # Compare the finished render with a reference image, requires ImageMagick
       puts 'Comparing images with'
       cmp_command = "compare -metric mae \"#{spec_dir}/test_result.png\" \"#{result_path}\" /tmp/diff.png"
@@ -110,7 +110,7 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
   end
 
   context 'animated scene submission' do
-    MAX_WAIT = 20
+    MAX_WAIT_ANIMATED = 20
 
     def spec_dir
       File.dirname(File.absolute_path(__FILE__))
@@ -139,7 +139,7 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
 
     it 'has valid job ids' do
       @jobs.each do |job|
-        expect(job[:id]).to match(/^[0-9]+$/)
+        expect(job.id).to match(/^[0-9]+$/)
       end
     end
 
@@ -147,15 +147,15 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
       expect(@jobs.count).to eq(4)
     end
 
-    it "solves the scene in up to #{MAX_WAIT} seconds" do
+    it "solves the scene in up to #{MAX_WAIT_ANIMATED} seconds" do
       waiting_for = 0
       all_completed = false
 
-      while waiting_for < MAX_WAIT
+      while waiting_for < MAX_WAIT_ANIMATED
         sleep 2
         waiting_for += 2
         all_completed = @jobs.all? do |job|
-          @adaptor.job_state(job[:id]).eql? Fitrender::Adaptor::States::JOB_STATE_COMPLETED
+          @adaptor.job_state(job.id).eql? Fitrender::Adaptor::States::JOB_STATE_COMPLETED
         end
         if all_completed
           puts "Completed in ~#{waiting_for} seconds"
@@ -169,7 +169,7 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
     it 'renders correctly' do
       # Compare the finished render with a reference image, requires ImageMagick
       @jobs.each do |job|
-        result_path = job[:path]
+        result_path = job.path
         puts 'Comparing images with'
         cmp_command = "compare -metric mae \"#{spec_dir}/test_result.png\" \"#{result_path}\" /tmp/diff.png"
         puts cmp_command

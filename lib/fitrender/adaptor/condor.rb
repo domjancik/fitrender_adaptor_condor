@@ -136,10 +136,13 @@ module Fitrender
         subs.each do |submission|
           sub_result = `condor_submit #{submission[:sub_file]}`
           raise Fitrender::SubmissionFailedError unless sub_result.to_i == 0
-          jobs << {
-              id: parse_job_id(sub_result.to_s),
-              path: submission[:render_path]
-          }
+          id = parse_job_id sub_result.to_s
+          job = Fitrender::Adaptor::Job.new(
+              id: id,
+              path: submission[:render_path],
+              name: submission[:name]
+          )
+          jobs << job
         end
 
         jobs

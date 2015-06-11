@@ -53,7 +53,8 @@ queue"
 
           {
               sub_file: File.absolute_path(sub_file),
-              render_path: "/mnt/fitrender/renders/#{render_filename(scene, frame)}.png" # TODO PNG is not the only possibility, although with the current script it is
+              render_path: "/mnt/fitrender/renders/#{render_filename(scene, frame)}.png",
+              name: "Frame #{frame}"
           }
         end
       end
