@@ -6,11 +6,11 @@ require 'fitrender/adaptor/condor/version'
 Gem::Specification.new do |spec|
   spec.name          = "fitrender_adaptor_condor"
   spec.version       = Fitrender::Adaptor::Condor::VERSION
-  spec.authors       = ["TODO: Write your name"]
-  spec.email         = ["TODO: Write your email address"]
+  spec.authors       = ["Dominik Jancik"]
+  spec.email         = ["jancidom@fit.cvut.cz"]
 
-  spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
+  spec.summary       = %q{FITRender Adaptor implementation for the HTCondor ocompute backend}
+  spec.description   = %q{FITRender Adaptor implementation for the HTCondor ocompute backend}
   spec.homepage      = "TODO: Put your gem's website or public repo URL here."
   spec.license       = "MIT"
 
