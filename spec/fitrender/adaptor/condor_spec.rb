@@ -179,6 +179,17 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
     end
   end
 
+  context 'config' do
+    TEST_VALUE = 'test value'
+
+    it 'can set an option' do
+      previous_value = @adaptor.option_value 'rank'
+      @adaptor.option_set_value 'rank', TEST_VALUE
+      expect(@adaptor.option_value 'rank').to eq(TEST_VALUE)
+      @adaptor.option_set_value 'rank', previous_value
+    end
+  end
+
   it 'implements all methods' do
     unimplemented_methods = @adaptor.methods_to_implement
 
