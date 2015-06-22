@@ -3,6 +3,7 @@ require 'fitrender_common'
 require 'nokogiri'
 
 require_relative 'generators/condor_blender_generator'
+require_relative 'renderers/blender'
 
 module Fitrender
   module Adaptor
@@ -22,15 +23,22 @@ module Fitrender
       JOB_STATE_HELD = 5
       JOB_STATE_SUBMISSION_ERROR = 6
 
+      include Fitrender::ConfigurationConcerns::Pathable
+
       def initialize
         super
 
         option_add 'requirements', '', 'The Requirements expression for submitted jobs, see http://bit.ly/condor_classads for more info'
         option_add 'rank', '', 'The rank expression for submitted jobs, see http://bit.ly/condor_classads for more info'
 
-        add_renderer(Fitrender::Adaptor::Renderer.new \
-          'Blender', 'blend', Fitrender::Adaptor::Generators::CondorBlenderGenerator.new
-        )
+        option_add 'subs_path', env_or_default('FITRENDER_SUBS_PATH', '/tmp'), 'The location for generated HTCondor submission files'
+
+        add_renderer(Fitrender::Adaptor::Renderers::Blender.new)
+      end
+
+      # Option shortcut
+      def subs_path
+        option_value 'subs_path'
       end
 
       def available?

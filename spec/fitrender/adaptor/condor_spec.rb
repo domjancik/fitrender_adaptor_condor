@@ -6,6 +6,10 @@ TEST_NODE_NAME = 'slot1@condor.sitedom'
 SEPARATOR = '------------------------'
 
 describe Fitrender::Adaptor::CondorShellAdaptor do
+  def spec_dir
+    File.dirname(File.absolute_path(__FILE__))
+  end
+
   before :context do
     puts SEPARATOR
     @adaptor = Fitrender::Adaptor::CondorShellAdaptor.new
@@ -35,10 +39,6 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
 
   context 'scene submission' do
     MAX_WAIT = 20
-
-    def spec_dir
-      File.dirname(File.absolute_path(__FILE__))
-    end
 
     before :context do
       scene = Fitrender::Adaptor::Scene.new(
@@ -112,10 +112,6 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
   context 'animated scene submission' do
     MAX_WAIT_ANIMATED = 20
 
-    def spec_dir
-      File.dirname(File.absolute_path(__FILE__))
-    end
-
     before :context do
       scene = Fitrender::Adaptor::Scene.new(
           renderer_id: 'Blender',
@@ -176,6 +172,40 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
         cmp_result = `#{cmp_command}`
         expect(cmp_result.to_i).to eq(0)
       end
+    end
+  end
+
+  context 'tile render submission' do
+    before :context do
+      scene = Fitrender::Adaptor::Scene.new(
+          renderer_id: 'Blender',
+          path: "#{spec_dir}/test_scene.blend"
+      )
+
+      puts SEPARATOR
+      puts 'Submitting scene - Tiles'
+      puts SEPARATOR
+
+      @adaptor.renderer('Blender').option_set_value('frame_granularity', 0.5)
+
+      @jobs = @adaptor.submit(scene)
+
+      puts 'Resulted in following jobs:'
+      @jobs.each do |job|
+        puts job
+      end
+
+      puts SEPARATOR
+    end
+
+    it 'has valid job ids' do
+      @jobs.each do |job|
+        expect(job.id).to match(/^[0-9]+$/)
+      end
+    end
+
+    it 'has a job for each tile' do
+      expect(@jobs.count).to eq(4)
     end
   end
 
