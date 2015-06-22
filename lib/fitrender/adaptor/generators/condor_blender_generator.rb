@@ -86,10 +86,13 @@ queue"
           sub_file.write submit_file_contents
           sub_file.close
 
+          job_name = "Frame #{frame}"
+          job_name += " tile #{tile_index + 1}/#{calculate_tile_count(granularity).to_i}" if granularity < 1
+
           {
               sub_file: File.absolute_path(sub_file),
               render_path: "#{@adaptor.render_path}/#{render_filename(scene, frame, tile_index)}.png",
-              name: "Frame #{frame}"
+              name: job_name
           }
         end
       end
