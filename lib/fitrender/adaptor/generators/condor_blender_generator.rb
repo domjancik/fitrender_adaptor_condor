@@ -17,14 +17,13 @@ module Fitrender
 
           granularity = renderer.frame_granularity
 
-          array = []
-          frames.inject(array) do |arr, frame|
+          frames.inject([]) do |arr, frame|
             (0..(calculate_tile_count(granularity) - 1)).each do |index|
               arr << generate_frame(scene, frame, granularity, index)
             end
-          end
 
-          array
+            arr
+          end
         end
 
         def stripped_scene_name(scene)
