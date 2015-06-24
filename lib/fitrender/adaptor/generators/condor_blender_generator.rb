@@ -76,8 +76,8 @@ arguments               = \"#{scene.path} #{blender_output_filename(scene, tile_
 when_to_transfer_output = ON_EXIT
 transfer_input_files    = #{blender_border_script_path}
 should_transfer_files   = YES
-log                     = #{@adaptor.log_path}/#{stripped_scene_name(scene)}.log
-output                  = #{@adaptor.out_path}/#{stripped_scene_name(scene)}.out
+log                     = #{@adaptor.log_path}/#{render_filename(scene, frame, tile_index)}.log
+output                  = #{@adaptor.out_path}/#{render_filename(scene, frame, tile_index)}.out
 queue"
           # FIXME Make all the paths settable via adaptor settings
           sub_file_path = "#{@adaptor.subs_path}/#{sub_filename(scene, frame, tile_index)}"
