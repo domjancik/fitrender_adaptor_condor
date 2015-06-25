@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 # Node name (eg. slot1@linux.site) available in the system
-TEST_NODE_NAME = 'slot1@condor.sitedom'
+TEST_NODE_NAME = `hostname`.to_s.sub! '\n', '' # It is presumed that the local computer is one of the computing nodes.
+TEST_REGEX = Regexp.new "(slot[0-9]@)?#{TEST_NODE_NAME}"
 
 SEPARATOR = '------------------------'
 
@@ -29,7 +30,7 @@ describe Fitrender::Adaptor::CondorShellAdaptor do
     nodes.each { |node| puts node.id }
     puts SEPARATOR
 
-    expect(nodes.any? { |node| node.id.eql? TEST_NODE_NAME }).to eq(true)
+    expect(nodes.any? { |node| !((TEST_REGEX.match node.id).nil?) }).to eq(true)
   end
 
   it 'finds a single node' do
